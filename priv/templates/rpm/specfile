@@ -38,11 +38,12 @@ Obsoletes: {{package_name}}
 %define debug_package %{nil}
 %define __prelink_undo_cmd /bin/cat prelink library
 
-%define platform_bin_dir %{_{{bin_or_sbin}}dir}
+%define platform_base_dir %{_libdir}/{{package_install_name}}
+%define platform_bin_dir %{platform_base_dir}/bin
 %define platform_data_dir %{_localstatedir}/lib/{{package_install_name}}
 %define platform_etc_dir %{_sysconfdir}/{{package_install_name}}
-%define platform_base_dir %{_libdir}/{{package_install_name}}
 %define platform_lib_dir %{platform_base_dir}/lib
+%define platform_slib_dir %{platform_base_dir}/slib
 %define platform_log_dir %{_localstatedir}/log/{{package_install_name}}
 
 
@@ -57,6 +58,7 @@ cat > rpm.vars.config <<EOF
 {platform_etc_dir,  "%{platform_etc_dir}"}.
 {platform_base_dir, "%{platform_base_dir}"}.
 {platform_lib_dir,  "%{platform_lib_dir}"}.
+{platform_slib_dir,  "%{platform_slib_dir}"}.
 {platform_log_dir,  "%{platform_log_dir}"}.
 
 {runner_script_dir, "%{platform_bin_dir}"}.
@@ -64,6 +66,7 @@ cat > rpm.vars.config <<EOF
 {runner_etc_dir,    "%{platform_etc_dir}"}.
 {runner_log_dir,    "%{platform_log_dir}"}.
 {runner_lib_dir,    "%{platform_lib_dir}"}.
+{runner_slib_dir,    "%{platform_slib_dir}"}.
 {runner_patch_dir,  "%{platform_lib_dir}/{{package_patch_dir}}"}.
 {runner_user,       "{{package_install_user}}"}.
 {pipe_dir,          "%{_localstatedir}/run/{{package_install_name}}/"}.
@@ -74,24 +77,27 @@ EOF
 OVERLAY_VARS="overlay_vars=../rpm.vars.config" make rel
 
 %install
-%define relpath       %{_builddir}/%{buildsubdir}/{{rebar_rel_dir}}/{{package_install_name}}
-%define buildroot_lib %{buildroot}%{_libdir}/{{package_install_name}}
-%define buildroot_etc %{buildroot}%{_sysconfdir}/{{package_install_name}}
+%define relpath        %{_builddir}/%{buildsubdir}/{{rebar_rel_dir}}/{{package_install_name}}
+%define buildroot_lib  %{buildroot}%{_libdir}/{{package_install_name}}
+%define buildroot_slib %{buildroot}%{_libdir}/{{package_install_name}}/slib
+%define buildroot_etc  %{buildroot}%{_sysconfdir}/{{package_install_name}}
 
 mkdir -p %{buildroot_etc}
 mkdir -p %{buildroot_lib}
+mkdir -p %{buildroot_slib}
 mkdir -p %{buildroot}%{_localstatedir}/lib/{{package_install_name}}
 mkdir -p %{buildroot}%{_localstatedir}/log/{{package_install_name}}
 mkdir -p %{buildroot}%{_localstatedir}/run/{{package_install_name}}
 
 cp -R %{relpath}/lib       %{buildroot_lib}
+cp -R %{relpath}/slib	   %{buildroot_slib}
 cp -R %{relpath}/erts-*    %{buildroot_lib}
 cp -R %{relpath}/releases  %{buildroot_lib}
 
-mkdir -p %{buildroot}%{_{{bin_or_sbin}}dir}
+mkdir -p %{buildroot}%{platform_base_dir}/bin
 if [ -d %{relpath}/bin ]; then \
    find %{relpath}/bin -type f \
-        -exec install -p -D -m 0755 {} %{buildroot}%{_{{bin_or_sbin}}dir}/ \; ;fi
+        -exec install -p -D -m 0755 {} %{buildroot}%{platform_base_dir}/bin/ \; ;fi
 
 # Scan for manpages that are optional for each command in the package_commands list
 # If found:
@@ -141,6 +147,10 @@ fi
 %post
 # Post Installation Script
 
+# Create symbolic links to bin dir
+ln -sf %{platform_bin_dir}/{{package_name}} %{_{{bin_or_sbin}}dir}/{{package_name}}
+ln -sf %{platform_base_dir} /usr/lib/{{package_install_name}}
+
 # For distros with SELinux (RHEL/Fedora)
 if [ `which selinuxenabled > /dev/null 2>&1` ] ; then
    # Fixup perms for SELinux (if it is enabled)
@@ -158,6 +168,10 @@ chmod 0755 %{_libdir}/{{package_install_name}}/lib/env.sh
 %preun
 # Pre-uninstall script
 
+#Delete symbolic links
+rm -f %{_{{bin_or_sbin}}dir}/{{package_name}}
+rm -f /usr/lib/{{package_name}}
+
 # Only on uninstall, not upgrades
 if [ "$1" = 0 ] ; then
    /sbin/service {{package_install_name}} stop > /dev/null 2>&1
@@ -174,7 +188,7 @@ exit 0
 %{_localstatedir}/run/{{package_install_name}}
 %defattr(-,root,root)
 %{_sysconfdir}/init.d/{{package_install_name}}
-%{_{{bin_or_sbin}}dir}/*
+%{platform_base_dir}/bin/*
 %{_libdir}/*
 %dir %{_sysconfdir}/{{package_install_name}}
 %config(noreplace) %{_sysconfdir}/{{package_install_name}}/*
