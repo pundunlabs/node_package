@@ -32,6 +32,7 @@
 {template, "copyright", "copyright"}.
 {template, "dirs", "dirs"}.
 {template, "install", "install"}.
+{template, "links", "{{package_name}}.links"}.
 {template, "postinst", "postinst"}.
 {template, "postrm", "postrm"}.
 {template, "rules", "rules"}.

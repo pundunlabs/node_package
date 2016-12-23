@@ -83,11 +83,11 @@ PKG_BUILD    ?= 1
 ## Call platform dependent makefile
 ostype: varcheck setversion
 	$(if $(PKGERDIR),,$(error "Operating system '$(OS)' not supported by node_package"))
-	$(MAKE) -f $(PKG_ID)/$(DEPS_DIR)/node_package/priv/templates/$(PKGERDIR)/Makefile.bootstrap
+	$(MAKE) -f $(DEPS_DIR)/node_package/priv/templates/$(PKGERDIR)/Makefile.bootstrap
 
 ## Set app version
 setversion: varcheck
-	echo "{app_version, \"$(PKG_VERSION)\"}." >> $(PKG_ID)/$(DEPS_DIR)/node_package/priv/templates/$(PKGERDIR)/vars.config
+	echo "{app_version, \"$(PKG_VERSION)\"}." >> $(DEPS_DIR)/node_package/priv/templates/$(PKGERDIR)/vars.config
 
 ## Check required settings before continuing
 varcheck:

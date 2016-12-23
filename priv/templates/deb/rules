@@ -15,7 +15,7 @@ ROOTDIR := debian/{{package_name}}
 
 ## Clear variables that may confound our build of sub-projects; also
 ## note that it is necessary to use overlay_vars relative to .. as
-## the generate command EXECUTES in rel/
+## the generate command EXECUTES in rel/i
 build:
 	unset CC CFLAGS CPPFLAGS LDFLAGS CXX CXXFLAGS \
 		&& OVERLAY_VARS="overlay_vars=../debian/vars.config" make rel
@@ -37,6 +37,7 @@ install: build
 	dh_install
 	dh_installman
 	dh_installinit --name={{package_install_name}} --no-start
+	dh_link
 	dh_fixperms
 	chmod 0755 $(ROOTDIR)/etc/{{package_install_name}}
 	chmod -R a+rX $(ROOTDIR)/etc/{{package_install_name}}
@@ -46,7 +47,7 @@ install: build
 		fi; \
 	done
 	chmod -R go+rX debian/{{package_name}}/usr/lib/{{package_install_name}}/lib/
-	dh_shlibdeps
+	dh_shlibdeps -l$(shell pwd)/$(LIBDIR)/slib/
 
 # We have nothing to do by default.
 binary-indep: install build-stamp

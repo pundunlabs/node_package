@@ -1,0 +1,3 @@
+{{#package_commands}}
+usr/lib/{{package_install_name}}/bin/{{name}} usr/{{bin_or_sbin}}/{{name}}
+{{/package_commands}}

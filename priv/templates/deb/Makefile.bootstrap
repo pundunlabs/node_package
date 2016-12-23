@@ -5,8 +5,10 @@
 export
 
 bootstrap:
-	mkdir -p $(PKG_ID)/debian
+	mkdir -p $(PKG_ID)/debian/source
+	echo '3.0 (quilt)' > $(PKG_ID)/debian/source/format
+	#(cd $(PKG_ID) && dch 'Switch to dpkg-source 3.0 (quilt) format')
 	cd $(PKG_ID)/debian && $(REBAR) -v create \
-                              template_dir=../$(DEPS_DIR)/node_package/priv/templates \
-                              template_vars=../pkg.vars.config template=deb
+                              template_dir=$(DEPS_DIR)/node_package/priv/templates \
+                              template_vars=$(BASE_DIR)/pkg.vars.config template=deb
 	make -C $(PKG_ID) -f debian/Makefile
