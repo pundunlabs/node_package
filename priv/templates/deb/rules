@@ -47,7 +47,7 @@ install: build
 		fi; \
 	done
 	chmod -R go+rX debian/{{package_name}}/usr/lib/{{package_install_name}}/lib/
-	dh_shlibdeps -l$(shell pwd)/$(LIBDIR)/slib/
+	#dh_shlibdeps -l$(shell pwd)/$(LIBDIR)/slib/
 
 # We have nothing to do by default.
 binary-indep: install build-stamp

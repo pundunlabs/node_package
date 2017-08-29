@@ -1,5 +1,4 @@
 {{rebar_rel_dir}}/{{package_install_name}}/lib usr/lib/{{package_install_name}}
-{{rebar_rel_dir}}/{{package_install_name}}/slib usr/lib/{{package_install_name}}
 {{rebar_rel_dir}}/{{package_install_name}}/erts* usr/lib/{{package_install_name}}
 {{rebar_rel_dir}}/{{package_install_name}}/releases usr/lib/{{package_install_name}}
 

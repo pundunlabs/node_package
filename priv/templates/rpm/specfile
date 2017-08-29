@@ -79,18 +79,15 @@ OVERLAY_VARS="overlay_vars=../rpm.vars.config" make rel
 %install
 %define relpath        %{_builddir}/%{buildsubdir}/{{rebar_rel_dir}}/{{package_install_name}}
 %define buildroot_lib  %{buildroot}%{_libdir}/{{package_install_name}}
-%define buildroot_slib %{buildroot}%{_libdir}/{{package_install_name}}/slib
 %define buildroot_etc  %{buildroot}%{_sysconfdir}/{{package_install_name}}
 
 mkdir -p %{buildroot_etc}
 mkdir -p %{buildroot_lib}
-mkdir -p %{buildroot_slib}
 mkdir -p %{buildroot}%{_localstatedir}/lib/{{package_install_name}}
 mkdir -p %{buildroot}%{_localstatedir}/log/{{package_install_name}}
 mkdir -p %{buildroot}%{_localstatedir}/run/{{package_install_name}}
 
 cp -R %{relpath}/lib       %{buildroot_lib}
-cp -R %{relpath}/slib	   %{buildroot_slib}
 cp -R %{relpath}/erts-*    %{buildroot_lib}
 cp -R %{relpath}/releases  %{buildroot_lib}
 
