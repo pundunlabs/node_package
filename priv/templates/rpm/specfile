@@ -34,6 +34,8 @@ Obsoletes: {{package_name}}
 %description
 {{package_desc}}
 
+%global _python_bytecompile_errors_terminate_build 0"
+
 %define init_script %{_sysconfdir}/init.d/{{package_install_name}}
 %define debug_package %{nil}
 %define __prelink_undo_cmd /bin/cat prelink library
